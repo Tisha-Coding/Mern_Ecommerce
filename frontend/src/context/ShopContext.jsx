@@ -13,7 +13,7 @@ const ShopContextProvider = ({ children }) => {
   const [showSearch, setShowSearch] = useState(false);
   const [cartItems, setCartItems] = useState({});
   const [products, setProducts] = useState([]);
-  const [token, setToken] = useState('');
+  const [token, setToken] = useState("");
   const navigate = useNavigate();
 
   // Add item to cart
@@ -40,7 +40,11 @@ const ShopContextProvider = ({ children }) => {
 
     if (token) {
       try {
-        await axios.post(backendUrl + '/api/cart/add', { itemId, size }, { headers: { token } });
+        await axios.post(
+          backendUrl + "/api/cart/add",
+          { itemId, size },
+          { headers: { token } }
+        );
       } catch (error) {
         toast.error(error.message);
       }
@@ -60,23 +64,25 @@ const ShopContextProvider = ({ children }) => {
     return totalCount;
   };
 
-  
- // Update item quantity in cart
-const updateQuantity = async (itemId, size, quantity) => {
-  let cartData = structuredClone(cartItems);
-  cartData[itemId][size] = quantity;
-  setCartItems(cartData);
-  toast.success("Cart updated");
+  // Update item quantity in cart
+  const updateQuantity = async (itemId, size, quantity) => {
+    let cartData = structuredClone(cartItems);
+    cartData[itemId][size] = quantity;
+    setCartItems(cartData);
+    toast.success("Cart updated");
 
-  if (token) {
-    try {
-      await axios.post(backendUrl + '/api/cart/update', { itemId, size, quantity }, { headers: { token } });
-    } catch (error) {
-      toast.error(error.message);
+    if (token) {
+      try {
+        await axios.post(
+          backendUrl + "/api/cart/update",
+          { itemId, size, quantity },
+          { headers: { token } }
+        );
+      } catch (error) {
+        toast.error(error.message);
+      }
     }
-  }
-};
-
+  };
 
   // Calculate total cart amount
   const getCartAmount = () => {
@@ -109,7 +115,11 @@ const updateQuantity = async (itemId, size, quantity) => {
   // Fetch user cart from backend
   const getUserCart = async (token) => {
     try {
-      const response = await axios.post(backendUrl + '/api/cart/get', {}, { headers: { token } });
+      const response = await axios.post(
+        backendUrl + "/api/cart/get",
+        {},
+        { headers: { token } }
+      );
       if (response.data.success) {
         setCartItems(response.data.cartData);
       }
@@ -119,30 +129,33 @@ const updateQuantity = async (itemId, size, quantity) => {
   };
 
   // Delete item from cart
-const deleteFromCart = async (itemId, size) => {
-  let cartData = structuredClone(cartItems);
+  const deleteFromCart = async (itemId, size) => {
+    let cartData = structuredClone(cartItems);
 
-  if (cartData[itemId] && cartData[itemId][size]) {
-    delete cartData[itemId][size];
+    if (cartData[itemId] && cartData[itemId][size]) {
+      delete cartData[itemId][size];
 
-    // Remove the product if no sizes remain
-    if (Object.keys(cartData[itemId]).length === 0) {
-      delete cartData[itemId];
+      // Remove the product if no sizes remain
+      if (Object.keys(cartData[itemId]).length === 0) {
+        delete cartData[itemId];
+      }
     }
-  }
 
-  setCartItems(cartData);
-  toast.success("Item removed from cart");
+    setCartItems(cartData);
+    toast.success("Item removed from cart");
 
-  if (token) {
-    try {
-      await axios.post(backendUrl + '/api/cart/delete', { itemId, size }, { headers: { token } });
-    } catch (error) {
-      toast.error(error.message);
+    if (token) {
+      try {
+        await axios.post(
+          backendUrl + "/api/cart/delete",
+          { itemId, size },
+          { headers: { token } }
+        );
+      } catch (error) {
+        toast.error(error.message);
+      }
     }
-  }
-};
-
+  };
 
   // Fetch products when component mounts
   useEffect(() => {
@@ -151,9 +164,9 @@ const deleteFromCart = async (itemId, size) => {
 
   // Fetch cart data when token is available
   useEffect(() => {
-    if (!token && localStorage.getItem('token')) {
-      setToken(localStorage.getItem('token'));
-      getUserCart(localStorage.getItem('token'));
+    if (!token && localStorage.getItem("token")) {
+      setToken(localStorage.getItem("token"));
+      getUserCart(localStorage.getItem("token"));
     }
   }, [token]);
 

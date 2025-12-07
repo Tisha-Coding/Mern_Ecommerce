@@ -1,66 +1,50 @@
-import React, { useContext, useState, useEffect } from 'react';
-import axios from 'axios';
-import { ShopContext } from '../context/ShopContext';
-import Title from '../components/Title';
+import React, { useContext, useState, useEffect } from "react";
+import axios from "axios";
+import { ShopContext } from "../context/ShopContext";
+import Title from "../components/Title";
 
 const Orders = () => {
-  const { backendUrl,token, currency } = useContext(ShopContext);
+  const { backendUrl, token, currency } = useContext(ShopContext);
 
-  const [orderData,setorderData] = useState([]);
+  const [orderData, setorderData] = useState([]);
 
-
-    const loadOrderData = async() =>
-    {
-      try{
-
-        if(!token)
-        {
-          return null;
-        }
-
-        const response = await axios.post(backendUrl + '/api/order/userorders',{},{headers:{token}})
-        // console.log(response.data);
-        if(response.data.success)
-        {
-          let allOrdersItem = []
-          response.data.orders.map((order)=>
-          {
-            order.items.map((item)=>
-            {
-                 item['status'] = order.status
-                 item['payment'] = order.payment
-                 item['paymentMethod'] = order.paymentMethod
-                 item['date'] = order.date
-                 allOrdersItem.push(item)
-            })
-          })
-          // reverse() -> so that latest data gets displayed first
-          setorderData(allOrdersItem.reverse());
-        }
-      }catch(error)
-      {
-
+  const loadOrderData = async () => {
+    try {
+      if (!token) {
+        return null;
       }
-    }
 
-    useEffect(()=>
-    {
-      loadOrderData()
-    },[token])
+      const response = await axios.post(
+        backendUrl + "/api/order/userorders",
+        {},
+        { headers: { token } }
+      );
+      // console.log(response.data);
+      if (response.data.success) {
+        let allOrdersItem = [];
+        response.data.orders.map((order) => {
+          order.items.map((item) => {
+            item["status"] = order.status;
+            item["payment"] = order.payment;
+            item["paymentMethod"] = order.paymentMethod;
+            item["date"] = order.date;
+            allOrdersItem.push(item);
+          });
+        });
+        // reverse() -> so that latest data gets displayed first
+        setorderData(allOrdersItem.reverse());
+      }
+    } catch (error) {}
+  };
 
-
-
-
-
-
-
-
-
+  useEffect(() => {
+    loadOrderData();
+  }, [token]);
 
   return (
     <div className="border-t pt-16">
       <div className="text-2xl">
-        <Title text1={'MY'} text2={'ORDERS'} />
+        <Title text1={"MY"} text2={"ORDERS"} />
       </div>
 
       <div>
@@ -81,13 +65,16 @@ const Orders = () => {
                   <p>Size: {item.size}</p>
                 </div>
                 <p className="mt-2">
-                  Date: <span className="text-gray-400">{new Date(item.date).toDateString()}</span>
+                  Date:{" "}
+                  <span className="text-gray-400">
+                    {new Date(item.date).toDateString()}
+                  </span>
                 </p>
 
                 <p className="mt-2">
-                  Payment: <span className="text-gray-400">{item.paymentMethod}</span>
+                  Payment:{" "}
+                  <span className="text-gray-400">{item.paymentMethod}</span>
                 </p>
-
               </div>
             </div>
 
@@ -96,7 +83,12 @@ const Orders = () => {
                 <p className="min-w-2 h-2 rounded-full bg-green-500"></p>
                 <p className="text-sm md:text-base">{item.status}</p>
               </div>
-              <button onClick={loadOrderData} className='border px-4 py-2 text-sm font-medium rounded-sm'>Track Order</button>
+              <button
+                onClick={loadOrderData}
+                className="border px-4 py-2 text-sm font-medium rounded-sm"
+              >
+                Track Order
+              </button>
             </div>
           </div>
         ))}
