@@ -46,13 +46,24 @@ const addProduct = async (req, res) => {
       return res.status(400).json({ message: "No files were uploaded" });
     }
 
-    // Upload images to Cloudinary
+    // Upload images to Cloudinary using buffer (Vercel-compatible)
     let imagesUrl = await Promise.all(
       Object.values(validImages).map(async (image) => {
-        let result = await Cloudinary.uploader.upload(image.path, {
-          resource_type: "image",
+        return new Promise((resolve, reject) => {
+          const uploadStream = Cloudinary.uploader.upload_stream(
+            {
+              resource_type: "image",
+            },
+            (error, result) => {
+              if (error) {
+                reject(error);
+              } else {
+                resolve(result.secure_url);
+              }
+            }
+          );
+          uploadStream.end(image.buffer);
         });
-        return result.secure_url;
       })
     );
 

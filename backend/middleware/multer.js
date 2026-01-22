@@ -1,13 +1,8 @@
 import multer from "multer";
 
-const storage = multer.diskStorage({
-  filename: function (req, file, callback) {
-    callback(null, file.originalname);
-  },
-});
+// Use memoryStorage for Vercel serverless compatibility
+const storage = multer.memoryStorage();
 
 const upload = multer({ storage });
-
-// have to keep the name storage otherwise this middleware will not work
 
 export default upload;
